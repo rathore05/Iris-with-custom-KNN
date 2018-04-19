@@ -1,0 +1,69 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Apr 19 22:03:05 2018
+
+@author: slytherin
+"""
+
+from sklearn import datasets
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score
+from scipy.spatial import distance
+
+def euc(a,b):
+    return distance.euclidean(a,b)
+
+class KNN():
+    def fit(self,features_train,labels_train):
+        self.features_train=features_train
+        self.labels_train=labels_train
+    
+    def predict(self,features_test):
+        predictions=[]
+        for item in features_test:
+            label=self.closest(item)
+            predictions.append(label)
+        return predictions
+    def closest(self,item):
+        best_dist=euc(item,self.features_train[0])
+        best_index=0    
+        for i in range(1, len(self.features_train)):
+            dist=euc(item,self.features_train[i])
+            if dist<best_dist:
+                best_dist=dist
+                best_index=i
+        return self.labels_train[best_index]
+        
+
+iris=datasets.load_iris()
+features=iris.data
+labels=iris.target
+features_train,features_test,labels_train,labels_test=train_test_split(features,labels,test_size=0.5)
+my_clf=KNN()
+my_clf.fit(features_train,labels_train)
+my_pred=my_clf.predict(features_test)
+clf=KNeighborsClassifier()
+clf.fit(features_train,labels_train)
+pred=clf.predict(features_test)
+print(accuracy_score(labels_test,pred))
+print(accuracy_score(labels_test,my_pred))
+#Versicolor
+iris1=[[4.7,2.5,3.1,1.2]]
+iris1_clf=clf.predict(iris1)
+iris1_myclf=my_clf.predict(iris1)
+if iris1_clf[0]==0:
+    print("Setosa")
+if iris1_clf[0]==1:
+    print("Versicolor")
+if iris1_clf[0]==2:
+    print("Verginica")
+    
+if iris1_myclf[0]==0:
+    print("Setosa")
+if iris1_myclf[0]==1:
+    print("Versicolor")
+if iris1_myclf[0]==2:
+    print("Verginica")
+
